@@ -24,16 +24,15 @@ that reveals the secret once and then destroys it.
 - **Regional hosts** - pick EU, US, UK, CA or NZ from a drop-down, or type a
   custom / self-hosted URL
 - **Configurable TTL** - 5 minutes to 14 days
-- **Clipboard automation** - optionally copy the link automatically, with an
-  optional custom **note** prepended (e.g. *"the password is in this link for
-  one-time view:"*)
+- **Two clipboard notes** — a **default** note (prepended automatically) and an
+  **alternate** note for a different audience or language (e.g. one in English,
+  one in Italian), each on its own line above the link
 - **Include username** (optional) - put both `Username:` and `Password:` in the
   secret, with a clear on-screen warning
 - **Auto-close** - optionally close the result window after *N* seconds, with a
   live countdown on the Close button
-- **Result dialog** shows the link with a **Copy Link (without note)** button;
-  there is intentionally **no "open in browser"** button, because opening the
-  link would burn the one-time secret before the recipient sees it
+- **Result dialog** with three copy options — **Copy Link (without note)**,
+  **Copy Link (with alternative note)**, and **Close**. There is intentionally
 - **Credential protection** - the API key is stored **DPAPI-encrypted**
   (per Windows user) in `KeePass.config.xml`
 
@@ -84,9 +83,10 @@ Open **Tools → OneTimeSecret Share Options…**
 | **API Username** | Your Onetime Secret account username (email). |
 | **API Key** | Your Onetime Secret API key. Stored **DPAPI-encrypted** in `KeePass.config.xml`. |
 | **Default TTL** | How long the secret lives before it expires (5 min … 14 days). |
-| **Note** | Free text prepended above the link when copying (see below). |
+| **Note - Default** | Free text prepended above the link on automatic copy (see below). |
+| **Note - Alternate** | A second note for a different audience/language, used by the **Copy Link (with alternative note)** button. |
 | **Copy URL to clipboard automatically** | Copy the link as soon as it's created. |
-| **Include note when copying to clipboard** | Prepend the note (own line) above the link on copy. |
+| **Include note when copying to clipboard** | Prepend the **default** note (own line) above the link on auto-copy. |
 | **Auto-close window after _N_ seconds** | Automatically close the result dialog after the given number of seconds. |
 | **Include username** | Put both the username and password in the secret. |
 | **Test…** | Creates a throwaway secret to verify your endpoint and credentials. |
@@ -113,15 +113,23 @@ The share link is generated on the same regional host, e.g.
 3. The result dialog shows the one-time link (already on your clipboard if
    auto-copy is on). Paste it wherever you need to.
 
-With **Include note** enabled, a paste looks like:
+With **Include note** enabled, the automatic copy uses your **default** note, so
+a paste looks like:
 
 ```
-the password is in this link for one-time view:
+The password is in this link for one-time view:
 https://eu.onetimesecret.com/secret/lmb0qn6hq99ardptz7n7554kmcdui7owqiuak
 ```
 
-**Copy Link (without note)** copies just the bare URL, regardless of your note
-setting.
+- **Copy Link (without note)** — the bare URL only.
+- **Copy Link (with alternative note)** — the **alternate** note followed by the
+  URL (enabled only when an alternate note is set). Handy when working with
+  different audience or language than your default note.
+- **Close**.
+
+Typical two-language workflow: set the default note in one language (used on
+auto-copy) and the alternate note in another, then click **Copy Link (with
+alternative note)** when the recipient needs the other language.
 
 ---
 
@@ -177,11 +185,12 @@ regional host.
 
 | Version | Highlights |
 | --- | --- |
+| **2.7.26.08** | Two clipboard notes (**default** + **alternate**); **Copy Link (with alternative note)** button in the result dialog. |
 | **2.6.26.07** | Bold "(Link copied to clipboard.)"; **Auto-close after N seconds** with countdown. |
 | **2.5.26.07** | **Copy Link (without note)** button; version shown in window titles. |
 | **2.4.26.07** | API endpoint **regional drop-down**; **Include username** option + warning. |
 | **2.3.26.07** | Fixed v2 payload (wrapped `conceal` body); **Note** field + include-note-on-copy; hardened in-memory password handling (byte-level, zeroed). |
-| **1.0.0.0** | Initial release. |
+| **1.0.26.07** | Initial release. |
 
 ---
 

@@ -8,7 +8,7 @@ that reveals the secret once and then destroys it.
 ![KeePass](https://img.shields.io/badge/KeePass-2.42%2B-2C5DA9)
 ![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.5%2B-512BD4)
 ![Platform](https://img.shields.io/badge/platform-Windows-0078D6)
-![Version](https://img.shields.io/badge/version-2.6.26.07-brightgreen)
+![Version](https://img.shields.io/badge/version-2.7.26.08-brightgreen)
 
 > Not affiliated with Onetime Secret or the KeePass project. "KeePass" and
 > "Onetime Secret" are the property of their respective owners.

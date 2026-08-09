@@ -8,7 +8,7 @@ that reveals the secret once and then destroys it.
 ![KeePass](https://img.shields.io/badge/KeePass-2.42%2B-2C5DA9)
 ![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.5%2B-512BD4)
 ![Platform](https://img.shields.io/badge/platform-Windows-0078D6)
-![Version](https://img.shields.io/badge/version-2.6.26.07-brightgreen)
+![Version](https://img.shields.io/badge/version-2.8.26.08-brightgreen)
 
 > Not affiliated with Onetime Secret or the KeePass project. "KeePass" and
 > "Onetime Secret" are the property of their respective owners.
@@ -23,6 +23,9 @@ that reveals the secret once and then destroys it.
   fallback handling for the deprecated v1 `/api/v1/share` endpoint
 - **Regional hosts** - pick EU, US, UK, CA or NZ from a drop-down, or type a
   custom / self-hosted URL
+- **Branded share domain** (optional) - generate links on your own custom domain
+  (e.g. `secrets.example.com`) instead of the onetimesecret.com host, when that
+  domain is configured on your OTS account
 - **Configurable TTL** - 5 minutes to 14 days
 - **Two clipboard notes** — a **default** note (prepended automatically) and an
   **alternate** note for a different audience or language (e.g. one in English,
@@ -32,7 +35,7 @@ that reveals the secret once and then destroys it.
 - **Auto-close** - optionally close the result window after *N* seconds, with a
   live countdown on the Close button
 - **Result dialog** with three copy options — **Copy Link (without note)**,
-  **Copy Link (with alternative note)**, and **Close**. There is intentionally
+  **Copy Link (with alternative note)**, and **Close**. 
 - **Credential protection** - the API key is stored **DPAPI-encrypted**
   (per Windows user) in `KeePass.config.xml`
 
@@ -82,6 +85,7 @@ Open **Tools → OneTimeSecret Share Options…**
 | **API Endpoint** | Drop-down of the regional v2 hosts; editable for a custom / self-hosted URL. |
 | **API Username** | Your Onetime Secret account username (email). |
 | **API Key** | Your Onetime Secret API key. Stored **DPAPI-encrypted** in `KeePass.config.xml`. |
+| **Share domain** | *(optional)* A custom/branded domain configured on your OTS account (e.g. `secrets.example.com`). The share link is then generated on that domain. |
 | **Default TTL** | How long the secret lives before it expires (5 min … 14 days). |
 | **Note - Default** | Free text prepended above the link on automatic copy (see below). |
 | **Note - Alternate** | A second note for a different audience/language, used by the **Copy Link (with alternative note)** button. |
@@ -102,7 +106,8 @@ https://nz.onetimesecret.com/api/v2/secret/conceal
 ```
 
 The share link is generated on the same regional host, e.g.
-`https://eu.onetimesecret.com/secret/<key>`.
+`https://eu.onetimesecret.com/secret/<key>` — unless you set a **Share domain**,
+in which case the link is generated on that custom domain instead.
 
 ---
 
@@ -160,10 +165,12 @@ alternative note)** when the recipient needs the other language.
   uses the legacy **v1** form. The v2 request body follows the current spec:
 
   ```json
-  {"secret":{"kind":"conceal","secret":"...","ttl":"3600","share_domain":""}}
+  {"secret":{"kind":"conceal","secret":"...","ttl":"3600","share_domain":"secrets.example.com"}}
   ```
 
-- The share link is built from `record.secret.key` in the v2 response.
+- The share link is built from `record.secret.key` and the domain the server
+  returns (`record.share_domain`), falling back to your configured **Share
+  domain** and then the API host.
 
 ---
 
@@ -185,6 +192,7 @@ regional host.
 
 | Version | Highlights |
 | --- | --- |
+| **2.8.26.08** | **Branded share domain** — generate links on your own custom domain. |
 | **2.7.26.08** | Two clipboard notes (**default** + **alternate**); **Copy Link (with alternative note)** button in the result dialog. |
 | **2.6.26.07** | Bold "(Link copied to clipboard.)"; **Auto-close after N seconds** with countdown. |
 | **2.5.26.07** | **Copy Link (without note)** button; version shown in window titles. |

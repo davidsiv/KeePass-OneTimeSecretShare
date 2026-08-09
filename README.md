@@ -27,14 +27,14 @@ that reveals the secret once and then destroys it.
   (e.g. `secrets.example.com`) instead of the onetimesecret.com host, when that
   domain is configured on your OTS account
 - **Configurable TTL** - 5 minutes to 14 days
-- **Two clipboard notes** — a **default** note (prepended automatically) and an
+- **Two clipboard notes** - a **default** note (prepended automatically) and an
   **alternate** note for a different audience or language (e.g. one in English,
   one in Italian), each on its own line above the link
 - **Include username** (optional) - put both `Username:` and `Password:` in the
   secret, with a clear on-screen warning
 - **Auto-close** - optionally close the result window after *N* seconds, with a
   live countdown on the Close button
-- **Result dialog** with three copy options — **Copy Link (without note)**,
+- **Result dialog** with three copy options - **Copy Link (without note)**,
   **Copy Link (with alternative note)**, and **Close**. 
 - **Credential protection** - the API key is stored **DPAPI-encrypted**
   (per Windows user) in `KeePass.config.xml`
@@ -106,7 +106,7 @@ https://nz.onetimesecret.com/api/v2/secret/conceal
 ```
 
 The share link is generated on the same regional host, e.g.
-`https://eu.onetimesecret.com/secret/<key>` — unless you set a **Share domain**,
+`https://eu.onetimesecret.com/secret/<key>` - unless you set a **Share domain**,
 in which case the link is generated on that custom domain instead.
 
 ---
@@ -126,8 +126,8 @@ The password is in this link for one-time view:
 https://eu.onetimesecret.com/secret/lmb0qn6hq99ardptz7n7554kmcdui7owqiuak
 ```
 
-- **Copy Link (without note)** — the bare URL only.
-- **Copy Link (with alternative note)** — the **alternate** note followed by the
+- **Copy Link (without note)** - the bare URL only.
+- **Copy Link (with alternative note)** - the **alternate** note followed by the
   URL (enabled only when an alternate note is set). Handy when working with
   different audience or language than your default note.
 - **Close**.
@@ -192,7 +192,7 @@ regional host.
 
 | Version | Highlights |
 | --- | --- |
-| **2.8.26.08** | **Branded share domain** — generate links on your own custom domain. |
+| **2.8.26.08** | **Branded share domain** - generate links on your own custom domain. |
 | **2.7.26.08** | Two clipboard notes (**default** + **alternate**); **Copy Link (with alternative note)** button in the result dialog. |
 | **2.6.26.07** | Bold "(Link copied to clipboard.)"; **Auto-close after N seconds** with countdown. |
 | **2.5.26.07** | **Copy Link (without note)** button; version shown in window titles. |

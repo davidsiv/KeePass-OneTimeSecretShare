@@ -7,8 +7,46 @@
   the entry's password to a OneTimeSecret instance and shows a one-time,
   self-destructing share link.
 
-  Version: 2.8.26.08
+  Version: 2.9.26.09
 
+  Changelog:
+    2.9.26.09 - "Note - Default" and "Note - Alternate" are now multi-line text
+                boxes, so notes can span several lines. Line endings are
+                normalized to CRLF when copied so multi-line notes paste cleanly.
+    2.8.26.08 - Branded share domain: optional "Share domain" in Options is sent
+                as share_domain and used to build the share link (falls back to
+                the domain the server returns, then the API host).
+    2.7.26.08 - Two clipboard notes: "Note - Default" (used on auto-copy) and
+                "Note - Alternate". Result dialog gains a "Copy Link with
+                alternative note" button (enabled when an alternate note is set).
+    2.6.26.07 - Author/company changed to "David S." throughout. Result dialog:
+                "(Link copied to clipboard.)" is now bold. New Options row
+                "Auto-close window after N seconds": when enabled, the result
+                dialog closes automatically after the given number of seconds
+                (with a countdown on the Close button).
+    2.5.26.07 - Result dialog: "Copy Link" is now "Copy Link (without note)" and
+                copies the bare URL (no note), regardless of the clipboard note
+                setting. Window titles of the result and Options dialogs now
+                include the version.
+    2.4.26.07 - API Endpoint is now a drop-down of the regional v2 hosts
+                (eu/us/uk/ca/nz), still editable for custom/self-hosted URLs.
+                New "Include username" option: when enabled, the secret contains
+                "Username: ...\r\nPassword: ..." (username read as bytes and
+                wiped like the password). Added a warning about sharing both
+                credentials in one secret.
+    2.3.26.07 - Fixed v2 request body: the conceal payload is now wrapped as
+                {"secret":{"kind":"conceal","secret":"...","ttl":"...","share_domain":""}}
+                per the current v2 spec (previous flat body returned HTTP 422).
+                v2 response parsing reads record.secret.key / record.receipt.key;
+                v2 error text preferred; 422 hint added.
+                Optional "Note" line in Options plus "Include note when copying
+                to clipboard": when enabled, the note is prepended (own line)
+                above the link on copy, for both auto-copy and the Copy button.
+                Password read as a UTF-8 byte[] via ProtectedString.ReadUtf8
+                (never a managed string) and zeroed after use; request body is
+                built and wiped as bytes. Config is validated before the
+                password is read. Ctrl+Z shortcut. Company name updated.
+    1.0.0     - Initial release.
 */
 
 using System;
@@ -172,7 +210,7 @@ namespace OneTimeSecretShare
         private static string BuildClipboardText(OtsConfig cfg, string url)
         {
             if (cfg.IncludeNoteInClipboard && !string.IsNullOrEmpty(cfg.Note))
-                return cfg.Note + "\r\n" + url;
+                return OtsInfo.NormalizeNewlines(cfg.Note) + "\r\n" + url;
             return url;
         }
 
@@ -238,8 +276,16 @@ namespace OneTimeSecretShare
     internal static class OtsInfo
     {
         public const string Product = "OneTimeSecret Share";
-        public const string Version = "2.8.26.08";
+        public const string Version = "2.9.26.09";
         public const string ProductVersioned = Product + " " + Version;
+
+        // Collapses any line ending to CRLF so multi-line notes paste correctly
+        // (KeePass's XML config normalizes stored line endings to LF on reload).
+        public static string NormalizeNewlines(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return s ?? string.Empty;
+            return s.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+        }
 
         public static string HumanTtl(long secs)
         {

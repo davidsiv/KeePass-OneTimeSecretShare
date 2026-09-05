@@ -1,7 +1,9 @@
 /*
   OneTimeSecret Share - result dialog.
 
-  Shows the generated one-time link. 
+  Shows the generated one-time link. Note: there is intentionally NO
+  "open in browser" button, because opening the link would consume
+  (burn) the one-time secret before the client can view it.
 */
 
 using System;
@@ -182,7 +184,7 @@ namespace OneTimeSecretShare
         {
             // Copies the alternate note (own line) followed by the link.
             string text = (m_alternateNote.Length > 0)
-                ? m_alternateNote + "\r\n" + m_url
+                ? OtsInfo.NormalizeNewlines(m_alternateNote) + "\r\n" + m_url
                 : m_url;
             bool ok = OtsClipboard.Copy(text);
             if (!ok)

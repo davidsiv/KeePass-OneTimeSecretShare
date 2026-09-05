@@ -177,7 +177,7 @@ namespace OneTimeSecretShare
             req.Method = "POST";
             req.ContentType = contentType;
             req.Accept = "application/json";
-            req.UserAgent = "KeePass-OneTimeSecretShare/2.8.26.08 (David S.)";
+            req.UserAgent = "KeePass-OneTimeSecretShare/2.9.26.09 (David S.)";
             req.Timeout = 30000;
 
             string auth = Convert.ToBase64String(

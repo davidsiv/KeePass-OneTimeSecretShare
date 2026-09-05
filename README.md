@@ -8,7 +8,7 @@ that reveals the secret once and then destroys it.
 ![KeePass](https://img.shields.io/badge/KeePass-2.42%2B-2C5DA9)
 ![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.5%2B-512BD4)
 ![Platform](https://img.shields.io/badge/platform-Windows-0078D6)
-![Version](https://img.shields.io/badge/version-2.8.26.08-brightgreen)
+![Version](https://img.shields.io/badge/version-2.9.26.09-brightgreen)
 
 > Not affiliated with Onetime Secret or the KeePass project. "KeePass" and
 > "Onetime Secret" are the property of their respective owners.
@@ -29,7 +29,7 @@ that reveals the secret once and then destroys it.
 - **Configurable TTL** - 5 minutes to 14 days
 - **Two clipboard notes** - a **default** note (prepended automatically) and an
   **alternate** note for a different audience or language (e.g. one in English,
-  one in Italian), each on its own line above the link
+  one in Italian). Both are **multi-line**, and each is placed above the link.
 - **Include username** (optional) - put both `Username:` and `Password:` in the
   secret, with a clear on-screen warning
 - **Auto-close** - optionally close the result window after *N* seconds, with a
@@ -87,8 +87,8 @@ Open **Tools → OneTimeSecret Share Options…**
 | **API Key** | Your Onetime Secret API key. Stored **DPAPI-encrypted** in `KeePass.config.xml`. |
 | **Share domain** | *(optional)* A custom/branded domain configured on your OTS account (e.g. `secrets.example.com`). The share link is then generated on that domain. |
 | **Default TTL** | How long the secret lives before it expires (5 min … 14 days). |
-| **Note - Default** | Free text prepended above the link on automatic copy (see below). |
-| **Note - Alternate** | A second note for a different audience/language, used by the **Copy Link (with alternative note)** button. |
+| **Note - Default** | *(multi-line)* Free text prepended above the link on automatic copy (see below). |
+| **Note - Alternate** | *(multi-line)* A second note for a different audience/language, used by the **Copy Link (with alternative note)** button. |
 | **Copy URL to clipboard automatically** | Copy the link as soon as it's created. |
 | **Include note when copying to clipboard** | Prepend the **default** note (own line) above the link on auto-copy. |
 | **Auto-close window after _N_ seconds** | Automatically close the result dialog after the given number of seconds. |
@@ -192,6 +192,7 @@ regional host.
 
 | Version | Highlights |
 | --- | --- |
+| **2.9.26.09** | **Multi-line notes** — Note - Default and Note - Alternate are now multi-line text boxes. |
 | **2.8.26.08** | **Branded share domain** - generate links on your own custom domain. |
 | **2.7.26.08** | Two clipboard notes (**default** + **alternate**); **Copy Link (with alternative note)** button in the result dialog. |
 | **2.6.26.07** | Bold "(Link copied to clipboard.)"; **Auto-close after N seconds** with countdown. |

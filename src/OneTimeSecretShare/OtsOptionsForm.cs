@@ -64,11 +64,11 @@ namespace OneTimeSecretShare
             this.MinimizeBox = false;
             this.ShowInTaskbar = false;
             this.Font = SystemFonts.MessageBoxFont;
-            this.ClientSize = new Size(478, 502);
+            this.ClientSize = new Size(478, 562);
 
             const int labelX = 14;
-            const int ctrlX = 150;
-            const int ctrlW = 314;
+            const int ctrlX = 165;
+            const int ctrlW = 299;
             const int rowH = 30;
             int y = 18;
 
@@ -90,7 +90,7 @@ namespace OneTimeSecretShare
             m_txtApiKey.UseSystemPasswordChar = true;
             y += rowH;
 
-            AddLabel("Share domain", labelX, y + 3);
+            AddLabel("Share domain (optional)", labelX, y + 3);
             m_txtShareDomain = AddText(ctrlX, y, ctrlW);
             y += rowH;
 
@@ -103,13 +103,14 @@ namespace OneTimeSecretShare
             this.Controls.Add(m_cmbTtl);
             y += rowH;
 
+            const int noteH = 52;
             AddLabel("Note - Default", labelX, y + 3);
-            m_txtNote = AddText(ctrlX, y, ctrlW);
-            y += rowH;
+            m_txtNote = AddMultilineText(ctrlX, y, ctrlW, noteH);
+            y += noteH + 8;
 
             AddLabel("Note - Alternate", labelX, y + 3);
-            m_txtNoteAlt = AddText(ctrlX, y, ctrlW);
-            y += rowH;
+            m_txtNoteAlt = AddMultilineText(ctrlX, y, ctrlW, noteH);
+            y += noteH + 8;
 
             m_chkAutoCopy = new CheckBox();
             m_chkAutoCopy.Text = "Copy URL to clipboard automatically";
@@ -214,6 +215,20 @@ namespace OneTimeSecretShare
             TextBox t = new TextBox();
             t.Location = new Point(x, y);
             t.Width = w;
+            this.Controls.Add(t);
+            return t;
+        }
+
+        private TextBox AddMultilineText(int x, int y, int w, int h)
+        {
+            TextBox t = new TextBox();
+            t.Location = new Point(x, y);
+            t.Width = w;
+            t.Height = h;
+            t.Multiline = true;
+            t.AcceptsReturn = true;   // Enter inserts a newline instead of clicking OK
+            t.WordWrap = true;
+            t.ScrollBars = ScrollBars.Vertical;
             this.Controls.Add(t);
             return t;
         }

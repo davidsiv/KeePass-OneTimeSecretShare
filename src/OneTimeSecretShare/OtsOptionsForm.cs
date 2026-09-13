@@ -193,6 +193,13 @@ namespace OneTimeSecretShare
             m_btnCancel.Location = new Point(ctrlX + ctrlW - 84, y);
             this.Controls.Add(m_btnCancel);
 
+            LinkLabel lnkSponsor = new LinkLabel();
+            lnkSponsor.AutoSize = true;
+            lnkSponsor.Text = "Buy me a beer \u2192";
+            lnkSponsor.Location = new Point(labelX + 96 + 14, y + 6);
+            lnkSponsor.LinkClicked += OnSponsorLink;
+            this.Controls.Add(lnkSponsor);
+
             this.AcceptButton = m_btnOk;
             this.CancelButton = m_btnCancel;
 
@@ -231,6 +238,11 @@ namespace OneTimeSecretShare
             t.ScrollBars = ScrollBars.Vertical;
             this.Controls.Add(t);
             return t;
+        }
+
+        private void OnSponsorLink(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            OtsInfo.OpenUrl(OtsInfo.SponsorUrl);
         }
 
         private void OnSecondsKeyPress(object sender, KeyPressEventArgs e)

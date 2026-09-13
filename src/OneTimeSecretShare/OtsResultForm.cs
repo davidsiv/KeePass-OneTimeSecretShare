@@ -118,7 +118,16 @@ namespace OneTimeSecretShare
             this.AcceptButton = m_btnClose;
             this.CancelButton = m_btnClose;
 
-            this.ClientSize = new Size(this.ClientSize.Width, y + m_btnClose.Height + margin);
+            int afterButtons = y + m_btnClose.Height + 12;
+            LinkLabel lnkSponsor = new LinkLabel();
+            lnkSponsor.AutoSize = true;
+            lnkSponsor.Text = OtsInfo.SponsorText;
+            lnkSponsor.ForeColor = SystemColors.GrayText;
+            lnkSponsor.Location = new Point(margin, afterButtons);
+            lnkSponsor.LinkClicked += OnSponsorLink;
+            this.Controls.Add(lnkSponsor);
+
+            this.ClientSize = new Size(this.ClientSize.Width, afterButtons + lnkSponsor.Height + margin);
 
             this.Load += OnFormLoad;
             this.FormClosed += OnFormClosedHandler;
@@ -168,6 +177,11 @@ namespace OneTimeSecretShare
                 m_timer = null;
             }
             GlobalWindowManager.RemoveWindow(this);
+        }
+
+        private void OnSponsorLink(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            OtsInfo.OpenUrl(OtsInfo.SponsorUrl);
         }
 
         private void OnCopy(object sender, EventArgs e)

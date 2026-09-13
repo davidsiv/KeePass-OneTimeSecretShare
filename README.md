@@ -193,11 +193,8 @@ regional host.
 
 | Version | Highlights |
 | --- | --- |
-<<<<<<< HEAD
 | **2.10.26.09** | Added a **GitHub Sponsors** link ("Buy me a beer") in Options and the result window. |
-=======
 | **2.9.26.09** | **Multi-line notes** - "Note - Default" and "Note - Alternate" are now multi-line text boxes. |
->>>>>>> 85509f562455515b065b1bcb569258f9e7f41b43
 | **2.8.26.08** | **Branded share domain** - generate links on your own custom domain. |
 | **2.7.26.08** | Two clipboard notes (**default** + **alternate**); **Copy Link (with alternative note)** button in the result dialog. |
 | **2.6.26.07** | Bold "(Link copied to clipboard.)"; **Auto-close after N seconds** with countdown. |

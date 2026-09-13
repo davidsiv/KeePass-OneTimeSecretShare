@@ -7,9 +7,11 @@
   the entry's password to a OneTimeSecret instance and shows a one-time,
   self-destructing share link.
 
-  Version: 2.10.26.09
+  Version: 2.11.26.09
 
   Changelog:
+    2.11.26.09 - Added a **Version Update Check** update check of KeePass can 
+		now also check for plugin updates.
     2.10.26.09 - Added a GitHub Sponsors link ("Buy me a beer") in the Options
                 dialog and at the bottom of the result window.
     2.9.26.09 - "Note - Default" and "Note - Alternate" are now multi-line text
@@ -71,7 +73,7 @@ namespace OneTimeSecretShare
         // No auto-update feed is published for this internal tool.
         public override string UpdateUrl
         {
-            get { return string.Empty; }
+            get { return OtsInfo.VersionInfoUrl; }
         }
 
         public override bool Initialize(IPluginHost host)
@@ -278,11 +280,17 @@ namespace OneTimeSecretShare
     internal static class OtsInfo
     {
         public const string Product = "OneTimeSecret Share";
-        public const string Version = "2.10.26.09";
+        public const string Version = "2.11.26.09";
         public const string ProductVersioned = Product + " " + Version;
 
         public const string SponsorUrl = "https://github.com/sponsors/davidsiv";
         public const string SponsorText = "Enjoying this plugin? Buy me a beer \u2192";
+
+        // KeePass downloads this file on Help -> Check for Updates and compares
+        // its version against this plugin's AssemblyFileVersion. Raw file on the
+        // repo's default branch (must be updated on every release).
+        public const string VersionInfoUrl =
+            "https://raw.githubusercontent.com/davidsiv/KeePass-OneTimeSecretShare/main/version.txt";
 
         // Opens a URL in the default browser (used for the sponsor link).
         public static void OpenUrl(string url)

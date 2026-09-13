@@ -8,7 +8,7 @@ that reveals the secret once and then destroys it.
 ![KeePass](https://img.shields.io/badge/KeePass-2.42%2B-2C5DA9)
 ![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.5%2B-512BD4)
 ![Platform](https://img.shields.io/badge/platform-Windows-0078D6)
-![Version](https://img.shields.io/badge/version-2.10.26.09-brightgreen)
+![Version](https://img.shields.io/badge/version-2.11.26.09-brightgreen)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/davidsiv)
 
 > Not affiliated with Onetime Secret or the KeePass project. "KeePass" and
@@ -193,6 +193,7 @@ regional host.
 
 | Version | Highlights |
 | --- | --- |
+| **2.11.26.09** | Added a **Version Update Check** update check of KeePass can now also check for plugin updates. |
 | **2.10.26.09** | Added a **GitHub Sponsors** link ("Buy me a beer") in Options and the result window. |
 | **2.9.26.09** | **Multi-line notes** - "Note - Default" and "Note - Alternate" are now multi-line text boxes. |
 | **2.8.26.08** | **Branded share domain** - generate links on your own custom domain. |

@@ -45,6 +45,10 @@ namespace OneTimeSecretShare
         public long AutoCloseSeconds = 10;
         public string ShareDomain = string.Empty;
 
+        // Set by Load when a stored (DPAPI:) API key could not be decrypted on
+        // this machine/user. Not persisted.
+        public bool ApiKeyLoadFailed = false;
+
         public static OtsConfig Load(IPluginHost host)
         {
             OtsConfig c = new OtsConfig();
@@ -64,16 +68,25 @@ namespace OneTimeSecretShare
 
             string rawKey = host.CustomConfig.GetString(CfgApiKey, string.Empty);
             if (!string.IsNullOrEmpty(rawKey) && rawKey.StartsWith(ProtPrefix, StringComparison.Ordinal))
-                c.ApiKey = Unprotect(rawKey.Substring(ProtPrefix.Length));
+            {
+                string dec;
+                bool ok = TryUnprotect(rawKey.Substring(ProtPrefix.Length), out dec);
+                c.ApiKey = ok ? dec : string.Empty;
+                c.ApiKeyLoadFailed = !ok; // stored key present but undecryptable
+            }
             else
                 c.ApiKey = rawKey; // Legacy / plain value; will be protected on next save.
 
             return c;
         }
 
-        public void Save(IPluginHost host)
+        // Returns true when settings were fully saved. Returns false only when a
+        // non-empty API key could not be DPAPI-encrypted: in that case every
+        // other setting is still saved, but the stored API key is left unchanged
+        // (never overwritten with plaintext).
+        public bool Save(IPluginHost host)
         {
-            if (host == null) return;
+            if (host == null) return false;
 
             host.CustomConfig.SetString(CfgEndpoint, ApiEndpoint ?? string.Empty);
             host.CustomConfig.SetString(CfgUsername, ApiUsername ?? string.Empty);
@@ -87,34 +100,52 @@ namespace OneTimeSecretShare
             host.CustomConfig.SetLong(CfgAutoCloseSec, AutoCloseSeconds);
             host.CustomConfig.SetString(CfgShareDomain, ShareDomain ?? string.Empty);
 
-            string keyToStore = string.IsNullOrEmpty(ApiKey)
-                ? string.Empty
-                : (ProtPrefix + Protect(ApiKey));
-            host.CustomConfig.SetString(CfgApiKey, keyToStore);
+            // API key: clearing is always allowed; otherwise store only if we can
+            // encrypt it. On encryption failure, leave the existing stored key
+            // untouched so we never write plaintext behind a "DPAPI:" prefix.
+            if (string.IsNullOrEmpty(ApiKey))
+            {
+                host.CustomConfig.SetString(CfgApiKey, string.Empty);
+                return true;
+            }
+
+            string enc = Protect(ApiKey);
+            if (enc == null) return false; // stored key preserved; caller warns
+
+            host.CustomConfig.SetString(CfgApiKey, ProtPrefix + enc);
+            return true;
         }
 
+        // Returns Base64 DPAPI ciphertext, or null if encryption is unavailable.
+        // It must NEVER return the plaintext: callers only add the "DPAPI:"
+        // prefix when this succeeds, so a null result means "do not store".
         private static string Protect(string plain)
         {
             try
             {
                 byte[] data = Encoding.UTF8.GetBytes(plain);
                 byte[] prot = Dpapi(data, true);
-                if (prot == null) return plain; // DPAPI unavailable: store as-is.
+                if (prot == null) return null; // DPAPI unavailable
                 return Convert.ToBase64String(prot);
             }
-            catch { return plain; } // Fall back to storing as-is if DPAPI is unavailable.
+            catch { return null; }
         }
 
-        private static string Unprotect(string enc)
+        // Decrypts a Base64 DPAPI value. Returns false (result = "") when the
+        // value cannot be decrypted (DPAPI unavailable, or the blob was created
+        // by a different Windows user/machine, e.g. a copied config).
+        private static bool TryUnprotect(string enc, out string result)
         {
+            result = string.Empty;
             try
             {
                 byte[] prot = Convert.FromBase64String(enc);
                 byte[] data = Dpapi(prot, false);
-                if (data == null) return string.Empty;
-                return Encoding.UTF8.GetString(data);
+                if (data == null) return false;
+                result = Encoding.UTF8.GetString(data);
+                return true;
             }
-            catch { return string.Empty; }
+            catch { return false; }
         }
 
         // Windows DPAPI (CurrentUser) via late binding.

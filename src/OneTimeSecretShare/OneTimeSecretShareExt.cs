@@ -7,13 +7,17 @@
   the entry's password to a OneTimeSecret instance and shows a one-time,
   self-destructing share link.
 
-  Version: 2.11.26.09
+  Version: 2.12.26.09
 
   Changelog:
-    2.11.26.09 - Added a **Version Update Check** update check of KeePass can 
-		now also check for plugin updates.
-    2.10.26.09 - Added a GitHub Sponsors link ("Buy me a beer") in the Options
-                dialog and at the bottom of the result window.
+    2.12.26.09 - Security fix: the API key is written to the config only when
+                DPAPI encryption succeeds; a failed encryption no longer stores
+                the key behind a "DPAPI:" prefix (which had exposed plaintext and
+                broken the next load). Options now warns if the key cannot be
+                encrypted, or if a stored key cannot be decrypted on this machine.
+    2.11.26.09 - Version re-stamp (update-check verification).
+    2.10.26.09 - Update checking (UpdateUrl + version.txt) and a GitHub Sponsors
+                link ("Buy me a beer") in the Options dialog and result window.
     2.9.26.09 - "Note - Default" and "Note - Alternate" are now multi-line text
                 boxes, so notes can span several lines. Line endings are
                 normalized to CRLF when copied so multi-line notes paste cleanly.
@@ -280,7 +284,7 @@ namespace OneTimeSecretShare
     internal static class OtsInfo
     {
         public const string Product = "OneTimeSecret Share";
-        public const string Version = "2.11.26.09";
+        public const string Version = "2.12.26.09";
         public const string ProductVersioned = Product + " " + Version;
 
         public const string SponsorUrl = "https://github.com/sponsors/davidsiv";

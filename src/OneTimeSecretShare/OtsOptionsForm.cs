@@ -271,6 +271,17 @@ namespace OneTimeSecretShare
 
             int idx = Array.IndexOf(TtlValues, c.DefaultTtlSeconds);
             m_cmbTtl.SelectedIndex = (idx >= 0) ? idx : 2; // default: 1 hour
+
+            if (c.ApiKeyLoadFailed)
+            {
+                MessageBox.Show(this,
+                    "A saved API key was found but could not be decrypted on this " +
+                    "computer/Windows user.\r\n\r\n" +
+                    "This usually means the configuration was copied from another " +
+                    "machine or user account (DPAPI keys are per-user). Please re-enter " +
+                    "your API key and click OK.",
+                    OtsInfo.Product, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void OnFormClosedHandler(object sender, FormClosedEventArgs e)
@@ -329,7 +340,18 @@ namespace OneTimeSecretShare
         {
             OtsConfig c = ReadForm(false);
             if (c == null) return;
-            c.Save(m_host);
+
+            if (!c.Save(m_host))
+            {
+                MessageBox.Show(this,
+                    "Windows could not encrypt the API key (DPAPI), so it was NOT saved.\r\n\r\n" +
+                    "All other settings were saved, and your previously saved API key is " +
+                    "unchanged. Please try again; if this keeps happening, your Windows user " +
+                    "profile may be unable to use DPAPI.",
+                    OtsInfo.Product, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return; // keep the dialog open so the entered key isn't silently lost
+            }
+
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

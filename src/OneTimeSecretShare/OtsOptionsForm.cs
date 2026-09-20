@@ -306,6 +306,12 @@ namespace OneTimeSecretShare
             c.ApiEndpoint = ep;
             c.ApiUsername = m_txtUsername.Text.Trim();
             c.ApiKey = m_txtApiKey.Text;
+            // Preserve the stored key ONLY when the field is empty AND untouched
+            // (e.g. a stored key that couldn't be decrypted here). A non-empty
+            // field — whether typed, a decrypted key, or a legacy plaintext key —
+            // is always re-run through Protect() on save, which (re-)encrypts it
+            // and migrates any legacy plaintext value to DPAPI.
+            c.PreserveStoredApiKey = (c.ApiKey.Length == 0) && !m_txtApiKey.Modified;
             c.ShareDomain = m_txtShareDomain.Text.Trim();
             c.AutoCopyUrl = m_chkAutoCopy.Checked;
             c.Note = m_txtNote.Text;
@@ -344,10 +350,11 @@ namespace OneTimeSecretShare
             if (!c.Save(m_host))
             {
                 MessageBox.Show(this,
-                    "Windows could not encrypt the API key (DPAPI), so it was NOT saved.\r\n\r\n" +
-                    "All other settings were saved, and your previously saved API key is " +
-                    "unchanged. Please try again; if this keeps happening, your Windows user " +
-                    "profile may be unable to use DPAPI.",
+                    "Windows could not encrypt the API key (DPAPI).\r\n\r\n" +
+                    "No settings were saved. Your previously saved settings and API key " +
+                    "are unchanged.\r\n\r\n" +
+                    "Please try again; if this keeps happening, your Windows user profile " +
+                    "may be unable to use DPAPI.",
                     OtsInfo.Product, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return; // keep the dialog open so the entered key isn't silently lost
             }

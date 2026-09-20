@@ -49,6 +49,11 @@ namespace OneTimeSecretShare
         // this machine/user. Not persisted.
         public bool ApiKeyLoadFailed = false;
 
+        // When true, Save() leaves the stored API key exactly as-is (used when
+        // the user did not touch the key field, so an empty/unreadable field
+        // never overwrites a stored key). Not persisted.
+        public bool PreserveStoredApiKey = false;
+
         public static OtsConfig Load(IPluginHost host)
         {
             OtsConfig c = new OtsConfig();
@@ -80,13 +85,30 @@ namespace OneTimeSecretShare
             return c;
         }
 
-        // Returns true when settings were fully saved. Returns false only when a
-        // non-empty API key could not be DPAPI-encrypted: in that case every
-        // other setting is still saved, but the stored API key is left unchanged
-        // (never overwritten with plaintext).
+        // Returns true when settings were saved. Returns false only when a
+        // non-empty API key could not be DPAPI-encrypted — in which case NOTHING
+        // is written (no partial save, so the stored endpoint can never end up
+        // paired with a stale key).
         public bool Save(IPluginHost host)
         {
             if (host == null) return false;
+
+            // Decide the API-key write FIRST, so a DPAPI failure aborts the whole
+            // save before any setting is touched.
+            //   null         -> leave the stored key exactly as-is
+            //   string.Empty -> clear the stored key
+            //   "DPAPI:..."  -> new encrypted key
+            string keyToStore;
+            if (PreserveStoredApiKey)
+                keyToStore = null;
+            else if (string.IsNullOrEmpty(ApiKey))
+                keyToStore = string.Empty;
+            else
+            {
+                string enc = Protect(ApiKey);
+                if (enc == null) return false; // abort: write nothing at all
+                keyToStore = ProtPrefix + enc;
+            }
 
             host.CustomConfig.SetString(CfgEndpoint, ApiEndpoint ?? string.Empty);
             host.CustomConfig.SetString(CfgUsername, ApiUsername ?? string.Empty);
@@ -100,19 +122,9 @@ namespace OneTimeSecretShare
             host.CustomConfig.SetLong(CfgAutoCloseSec, AutoCloseSeconds);
             host.CustomConfig.SetString(CfgShareDomain, ShareDomain ?? string.Empty);
 
-            // API key: clearing is always allowed; otherwise store only if we can
-            // encrypt it. On encryption failure, leave the existing stored key
-            // untouched so we never write plaintext behind a "DPAPI:" prefix.
-            if (string.IsNullOrEmpty(ApiKey))
-            {
-                host.CustomConfig.SetString(CfgApiKey, string.Empty);
-                return true;
-            }
+            if (keyToStore != null)
+                host.CustomConfig.SetString(CfgApiKey, keyToStore);
 
-            string enc = Protect(ApiKey);
-            if (enc == null) return false; // stored key preserved; caller warns
-
-            host.CustomConfig.SetString(CfgApiKey, ProtPrefix + enc);
             return true;
         }
 
@@ -121,14 +133,16 @@ namespace OneTimeSecretShare
         // prefix when this succeeds, so a null result means "do not store".
         private static string Protect(string plain)
         {
+            byte[] data = null;
             try
             {
-                byte[] data = Encoding.UTF8.GetBytes(plain);
+                data = Encoding.UTF8.GetBytes(plain);
                 byte[] prot = Dpapi(data, true);
                 if (prot == null) return null; // DPAPI unavailable
                 return Convert.ToBase64String(prot);
             }
             catch { return null; }
+            finally { if (data != null) Array.Clear(data, 0, data.Length); }
         }
 
         // Decrypts a Base64 DPAPI value. Returns false (result = "") when the
@@ -137,15 +151,17 @@ namespace OneTimeSecretShare
         private static bool TryUnprotect(string enc, out string result)
         {
             result = string.Empty;
+            byte[] data = null;
             try
             {
                 byte[] prot = Convert.FromBase64String(enc);
-                byte[] data = Dpapi(prot, false);
+                data = Dpapi(prot, false);
                 if (data == null) return false;
                 result = Encoding.UTF8.GetString(data);
                 return true;
             }
             catch { return false; }
+            finally { if (data != null) Array.Clear(data, 0, data.Length); }
         }
 
         // Windows DPAPI (CurrentUser) via late binding.
@@ -157,8 +173,9 @@ namespace OneTimeSecretShare
         // reflection keeps the encryption while requiring only the default
         // assembly set, so the plugin compiles and loads reliably.
         //
-        // Returns null if DPAPI cannot be reached; callers then fall back to
-        // storing the value unencrypted (same behaviour as before).
+        // Returns null if DPAPI cannot be reached. Callers must then abort the
+        // save (Protect) or report a decrypt failure (TryUnprotect) — the key is
+        // never stored or returned as plaintext.
         private static byte[] Dpapi(byte[] input, bool bProtect)
         {
             try

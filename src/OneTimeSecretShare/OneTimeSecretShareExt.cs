@@ -7,9 +7,15 @@
   the entry's password to a OneTimeSecret instance and shows a one-time,
   self-destructing share link.
 
-  Version: 2.12.26.09
+  Version: 2.14.26.09
 
   Changelog:
+    2.14.26.09 - Hardened API-key save/load: a DPAPI encryption failure now
+                aborts the entire save (no partial write, no endpoint/key
+                mismatch) with a corrected message; an untouched non-empty key
+                (incl. a legacy plaintext key) is re-encrypted on save, while an
+                untouched empty field never clears a stored key; plaintext byte
+                buffers are zeroed after use.
     2.12.26.09 - Security fix: the API key is written to the config only when
                 DPAPI encryption succeeds; a failed encryption no longer stores
                 the key behind a "DPAPI:" prefix (which had exposed plaintext and
@@ -284,7 +290,7 @@ namespace OneTimeSecretShare
     internal static class OtsInfo
     {
         public const string Product = "OneTimeSecret Share";
-        public const string Version = "2.12.26.09";
+        public const string Version = "2.14.26.09";
         public const string ProductVersioned = Product + " " + Version;
 
         public const string SponsorUrl = "https://github.com/sponsors/davidsiv";
